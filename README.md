@@ -25,7 +25,7 @@ But I usually set policy for all chains to DROP, and my config file for iptables
 -A OUTPUT -o enp0s3 -m state --state NEW,ESTABLISHED,RELATED -j ACCEPT
 
 -A INPUT -i enp0s3 -s 192.168.1.101/32 -p tcp -m tcp --dport 22 -m state --state NEW -j ACCEPT
--A INPUT -i enp0s3 -s 92.168.1.101/32  -p icmp -m icmp --icmp-type 8 -j ACCEPT
+-A INPUT -i enp0s3 -s 192.168.1.101/32  -p icmp -m icmp --icmp-type 8 -j ACCEPT
 
 -A INPUT -j LOG
 
@@ -37,7 +37,21 @@ COMMIT
 ```
 Here is enp0s3 ethernet interface in local machine (can be different in some virtuallization systems), and also I open ssh and icmp for my management station (it ip-address is 192.168.1.101)
 ### 2. There is a directory with 2 files that are shown as '???' and '???'. They have different names, but in console are shown as 3 question marks. How to remove them?
-Answer:
+Answer: I haven't encountered with this situation, probably it can be due to problems with encoding. If in directory only this two files, the most easy way to delete them is next command:
+```bash
+rm -rf /path_to_dir/*
+```
+It command usualy remove all content of directory.
+Another solution for this situation, can be remove files by it's inode. I can't make it with one string command (with pipe) and write this little script:
+```bash
+#!/bin/bash
+PATH_PROBLEM=/path_to_problem_files/
+inodes=`ls -li $PATH_PROBLEM | awk '{print $1}' | awk 'NR>1'`
+for inode in $inodes
+do
+  find . -inum $inode  -exec rm {} \;
+done
+```
 ### 3. If you want to upload some file once per hour to 1 server from 1000 servers, how it can be done? What special cases should be taken into account?
 Answer: We admit, that we can connect to 1000 servers via ssh, and  that we use rsa-key. In my examples I chose nginx.conf file, and check if it exist on remote server. For the name of copied file I use next format: nginx.conf-remote_server_name-timestamp (to avoid duplicate names). I would like to show two ways how to solve our task (this two methods use ssh):
 - Use bash script. I have written file, with list of names of our servers, it called servers.txt, and have view:
