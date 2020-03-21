@@ -1,4 +1,4 @@
-# Test task answer
+# Test task answers
 ### 1.Please write iptables rules that will block all incoming traffic and allow outgoing (browsing from local machine should work, but all incoming connections should be dropped).
 Answer: most easy way to set policy for chains INPUT and FORWARD to DROP (or REJECT) and for chain OUTPUT to ACCEPT. I also usually open all for loopback interface. File from iptables-restore take rules has view:
 ```
